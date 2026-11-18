@@ -37,6 +37,7 @@ import {
   CatalogueIllustration,
   OmnichannelHubIllustration,
 } from '../../components/common/OptionCIllustrations';
+import { RecruiterDemoSection } from '../../components/common/RecruiterDemoSection';
 
 export const HomePage: React.FC = () => {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -212,142 +213,10 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* SECTION 1.5: INTERVIEW EVALUATION DEMO SHOWCASE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-forest-deep bg-[#053F32] p-8 sm:p-10 border border-[#075443] shadow-option-c-lg text-white">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-[#075443]">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#075443] text-emerald text-xs font-bold uppercase tracking-wider border border-[#15966F]/40">
-                <Play className="w-3.5 h-3.5 fill-emerald" />
-                <span>Interview Evaluation Demo</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Explore MarketPath AI with 4 Populated Workspaces
-              </h2>
-              <p className="text-sm text-[#C1E0D4] max-w-2xl">
-                Pre-seeded with real Indian D2C brand data (<strong>Aura Terra Living — Pune</strong>). Every persona is fully populated with products, orders, inventory alerts, advisory notes, and campaigns.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <a
-                href={siteConfig.githubRepoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="View source code on GitHub"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#075443] hover:bg-forest text-xs font-bold text-white border border-[#15966F]/40 transition-colors shadow-xs"
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-                </svg>
-                <span>Inspect GitHub Repo</span>
-                <ExternalLink className="w-3.5 h-3.5 text-[#8CC5B0]" />
-              </a>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-8">
-            {/* Persona 1: Company Owner */}
-            <div className="rounded-2xl bg-[#075443]/60 p-5 border border-[#15966F]/30 hover:border-emerald transition-all flex flex-col justify-between space-y-4">
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-forest text-emerald flex items-center justify-center font-extrabold text-sm border border-brand-700">
-                    🏢
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald bg-forest px-2 py-0.5 rounded-full border border-brand-700">
-                    Brand Owner
-                  </span>
-                </div>
-                <h3 className="text-base font-bold text-white">Aura Terra Living</h3>
-                <p className="text-xs text-[#C1E0D4] leading-relaxed">
-                  18 handcrafted terracotta products, 40 channel orders across 4 marketplaces, inventory alerts & 4 live marketing campaigns.
-                </p>
-              </div>
-              <Link
-                to="/login?type=company"
-                className="w-full text-center py-2.5 px-4 rounded-xl bg-emerald hover:bg-[#128260] text-forest-deep text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5"
-              >
-                <span>Launch Brand Workspace</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {/* Persona 2: Agency Partner */}
-            <div className="rounded-2xl bg-[#075443]/60 p-5 border border-[#15966F]/30 hover:border-emerald transition-all flex flex-col justify-between space-y-4">
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-forest text-softorange flex items-center justify-center font-extrabold text-sm border border-brand-700">
-                    🚀
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-softorange bg-forest px-2 py-0.5 rounded-full border border-brand-700">
-                    Verified Agency
-                  </span>
-                </div>
-                <h3 className="text-base font-bold text-white">CraftVerve Media</h3>
-                <p className="text-xs text-[#C1E0D4] leading-relaxed">
-                  Agency portal with 3 packaged growth tiers, client RFP inbox, active monthly retainers, and privacy-vaulted proposals.
-                </p>
-              </div>
-              <Link
-                to="/login?type=agency"
-                className="w-full text-center py-2.5 px-4 rounded-xl bg-[#075443] hover:bg-forest text-emerald border border-[#15966F]/40 text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5"
-              >
-                <span>Launch Agency Portal</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {/* Persona 3: Consultant */}
-            <div className="rounded-2xl bg-[#075443]/60 p-5 border border-[#15966F]/30 hover:border-emerald transition-all flex flex-col justify-between space-y-4">
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-forest text-blue-300 flex items-center justify-center font-extrabold text-sm border border-brand-700">
-                    🩺
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300 bg-forest px-2 py-0.5 rounded-full border border-brand-700">
-                    Lead Advisor
-                  </span>
-                </div>
-                <h3 className="text-base font-bold text-white">Dr. Rajesh Sharma</h3>
-                <p className="text-xs text-[#C1E0D4] leading-relaxed">
-                  Growth advisory desk with 4 scheduled/completed sessions, private diagnostic notes, unit economics audits & action checklists.
-                </p>
-              </div>
-              <Link
-                to="/login?type=consultant"
-                className="w-full text-center py-2.5 px-4 rounded-xl bg-[#075443] hover:bg-forest text-emerald border border-[#15966F]/40 text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5"
-              >
-                <span>Launch Consultant Desk</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            {/* Persona 4: Platform Operator */}
-            <div className="rounded-2xl bg-[#075443]/60 p-5 border border-[#15966F]/30 hover:border-emerald transition-all flex flex-col justify-between space-y-4">
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-forest text-purple-300 flex items-center justify-center font-extrabold text-sm border border-brand-700">
-                    ⚡
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-300 bg-forest px-2 py-0.5 rounded-full border border-brand-700">
-                    Platform Admin
-                  </span>
-                </div>
-                <h3 className="text-base font-bold text-white">Platform Operator</h3>
-                <p className="text-xs text-[#C1E0D4] leading-relaxed">
-                  Full operator console with multi-tenant oversight, connector telemetry, job dead-letter queue, agency vetting & audit logs.
-                </p>
-              </div>
-              <Link
-                to="/login?type=admin"
-                className="w-full text-center py-2.5 px-4 rounded-xl bg-[#075443] hover:bg-forest text-emerald border border-[#15966F]/40 text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5"
-              >
-                <span>Launch Admin Console</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* SECTION 1.5: RECRUITER DEMO ACCESS */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-8">
+        <RecruiterDemoSection />
+      </div>
 
       {/* SECTION 2: PRODUCT & BUSINESS BENEFITS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

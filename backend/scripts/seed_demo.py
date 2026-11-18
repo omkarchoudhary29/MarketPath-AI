@@ -60,10 +60,10 @@ DEMO_AGENCY_ORG_ID = uuid.UUID("d0000002-0000-0000-0000-000000000002")
 
 # Consistent, professional demo credentials for seamless interviewer testing
 DEMO_PASSWORDS = {
-    "company": os.getenv("DEMO_PASSWORD_COMPANY", "AuraTerra#Demo2026!"),
-    "agency": os.getenv("DEMO_PASSWORD_AGENCY", "CraftVerve#Demo2026!"),
-    "consultant": os.getenv("DEMO_PASSWORD_CONSULTANT", "DrSharma#Demo2026!"),
-    "admin": os.getenv("DEMO_PASSWORD_ADMIN", "Admin#Platform2026!"),
+    "company": os.getenv("DEMO_PASSWORD_COMPANY", "MarketPath-Company-Demo-2026!"),
+    "agency": os.getenv("DEMO_PASSWORD_AGENCY", "MarketPath-Agency-Demo-2026!"),
+    "consultant": os.getenv("DEMO_PASSWORD_CONSULTANT", "MarketPath-Consultant-Demo-2026!"),
+    "admin": os.getenv("DEMO_PASSWORD_ADMIN", "MarketPath-DemoAdmin-2026!"),
 }
 
 

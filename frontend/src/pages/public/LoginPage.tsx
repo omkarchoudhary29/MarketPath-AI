@@ -18,9 +18,12 @@ import {
   UserCheck,
   CheckCircle2,
   RotateCcw,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { RecruiterDemoSection } from '../../components/common/RecruiterDemoSection';
 
 const DEMO_CREDENTIALS: Record<
   'company' | 'agency' | 'consultant' | 'admin',
@@ -28,25 +31,25 @@ const DEMO_CREDENTIALS: Record<
 > = {
   company: {
     email: 'demo.company@marketpath.ai',
-    password: 'AuraTerra#Demo2026!',
+    password: 'MarketPath-Company-Demo-2026!',
     name: 'Aura Terra Living (Brand Owner)',
     desc: 'Pre-filled with 18 D2C products, 40 channel orders across 4 marketplaces, inventory alerts & analytics',
   },
   agency: {
     email: 'demo.agency@marketpath.ai',
-    password: 'CraftVerve#Demo2026!',
+    password: 'MarketPath-Agency-Demo-2026!',
     name: 'CraftVerve Media (Agency Partner)',
     desc: 'Pre-filled with Verified Partner profile, 3 service packages, active RFPs & client engagements',
   },
   consultant: {
     email: 'demo.consultant@marketpath.ai',
-    password: 'DrSharma#Demo2026!',
+    password: 'MarketPath-Consultant-Demo-2026!',
     name: 'Dr. Rajesh Sharma (Lead D2C Advisor)',
     desc: 'Pre-filled with 4 strategic advisory sessions, diagnostics & private confidential notes',
   },
   admin: {
     email: 'demo.admin@marketpath.ai',
-    password: 'Admin#Platform2026!',
+    password: 'MarketPath-DemoAdmin-2026!',
     name: 'Demo Platform Operator (Admin Console)',
     desc: 'Pre-filled with platform telemetry, tenant oversight, user vetting & audit logs',
   },
@@ -75,6 +78,22 @@ export const LoginPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleCopy = (text: string, field: string) => {
+    try {
+      navigator.clipboard.writeText(text);
+    } catch {
+      // Ignore
+    }
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+    addToast({
+      type: 'info',
+      title: 'Copied to Clipboard',
+      message: `${field === 'email' ? 'Email' : 'Password'} copied successfully.`,
+    });
+  };
 
   // Auto-sync credentials when URL query parameter changes
   useEffect(() => {
@@ -139,7 +158,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-warmwhite">
+    <div className="min-h-[85vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-warmwhite">
       <div className="max-w-md w-full space-y-6 bg-white p-8 sm:p-10 rounded-3xl border border-bordergrey shadow-option-c-lg">
         {/* Brand Header */}
         <div className="text-center space-y-2">
@@ -246,24 +265,50 @@ export const LoginPage: React.FC = () => {
           )}
         </div>
 
-        {/* Demo Credentials Pre-fill Notice Banner */}
-        <div className="p-3 rounded-xl bg-forest/5 border border-forest/20 flex items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald shrink-0" />
-            <div>
-              <span className="font-bold text-forest">Demo Credentials Pre-filled: </span>
-              <span className="text-charcoal-muted font-medium">{DEMO_CREDENTIALS[accountType].name}</span>
+        {/* Demo Credentials Pre-fill Notice Banner with Quick Copy Actions */}
+        <div className="p-3.5 rounded-2xl bg-forest/5 border border-forest/20 space-y-2 text-xs">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <CheckCircle2 className="w-4 h-4 text-emerald shrink-0" />
+              <div className="truncate">
+                <span className="font-bold text-forest">Demo Mode Active: </span>
+                <span className="text-charcoal-muted font-medium truncate">{DEMO_CREDENTIALS[accountType].name}</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleResetDemoCredentials}
+              title="Refill default demo credentials for this role"
+              className="text-[11px] font-bold text-forest hover:text-emerald inline-flex items-center gap-1 cursor-pointer underline shrink-0"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Refill
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-forest/10 text-[11px]">
+            <span className="text-charcoal-muted shrink-0 font-medium">Quick Credentials:</span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleCopy(DEMO_CREDENTIALS[accountType].email, 'email')}
+                className="px-2 py-0.5 rounded-md bg-white border border-bordergrey hover:border-forest text-charcoal font-mono text-[10px] inline-flex items-center gap-1 cursor-pointer transition-colors"
+                title="Copy demo email"
+              >
+                {copiedField === 'email' ? <Check className="w-3 h-3 text-emerald" /> : <Copy className="w-3 h-3 text-charcoal-muted" />}
+                <span>Email</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleCopy(DEMO_CREDENTIALS[accountType].password, 'password')}
+                className="px-2 py-0.5 rounded-md bg-white border border-bordergrey hover:border-forest text-charcoal font-mono text-[10px] inline-flex items-center gap-1 cursor-pointer transition-colors"
+                title="Copy demo password"
+              >
+                {copiedField === 'password' ? <Check className="w-3 h-3 text-emerald" /> : <Copy className="w-3 h-3 text-charcoal-muted" />}
+                <span>Password</span>
+              </button>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={handleResetDemoCredentials}
-            title="Refill default demo credentials for this role"
-            className="text-[11px] font-bold text-forest hover:text-emerald inline-flex items-center gap-1 cursor-pointer underline shrink-0"
-          >
-            <RotateCcw className="w-3 h-3" />
-            Refill
-          </button>
         </div>
 
         {errorMessage && (
@@ -401,6 +446,11 @@ export const LoginPage: React.FC = () => {
             </p>
           )}
         </div>
+      </div>
+
+      {/* SECTION: RECRUITER DEMO ACCESS */}
+      <div className="w-full max-w-5xl mt-10">
+        <RecruiterDemoSection onSelectRole={handleAccountTypeChange} />
       </div>
     </div>
   );

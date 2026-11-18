@@ -194,6 +194,33 @@ async def verify_demo_data() -> bool:
             with_notes = [c for c in consultations if c.internal_notes and len(c.internal_notes) > 50]
             print(f"✅ Consultant Workspace: {len(consultations)} consultation sessions ({len(with_notes)} with private diagnostic notes).")
 
+        # 10. Recruiter Demo Accounts & Authentication
+        from backend.app.core.security import verify_password
+        expected_demo_creds = [
+            ("demo.company@marketpath.ai", "company", "MarketPath-Company-Demo-2026!"),
+            ("demo.agency@marketpath.ai", "agency", "MarketPath-Agency-Demo-2026!"),
+            ("demo.consultant@marketpath.ai", "consultant", "MarketPath-Consultant-Demo-2026!"),
+            ("demo.admin@marketpath.ai", "admin", "MarketPath-DemoAdmin-2026!"),
+        ]
+        demo_auth_passed = True
+        for d_email, d_type, d_pw in expected_demo_creds:
+            d_user_res = await db.execute(select(UserProfile).where(UserProfile.email == d_email))
+            d_user = d_user_res.scalar_one_or_none()
+            if not d_user:
+                print(f"❌ Demo User Check Failed: {d_email} not found.")
+                demo_auth_passed = False
+                all_passed = False
+            elif not verify_password(d_pw, d_user.password_hash):
+                print(f"❌ Demo Auth Check Failed: {d_email} password mismatch.")
+                demo_auth_passed = False
+                all_passed = False
+            elif not any(d_user.password_hash.startswith(p) for p in ["pbkdf2", "$2", "$argon2"]):
+                print(f"❌ Demo Security Check Failed: Unhashed password detected for {d_email}.")
+                demo_auth_passed = False
+                all_passed = False
+        if demo_auth_passed:
+            print("✅ Recruiter Demo Accounts: All 4 public demo credentials authenticated & hashed securely.")
+
     print("=" * 70)
     if all_passed:
         print("🎉 ALL DEMO DATA INVARIANTS PASSED PERFECTLY!")

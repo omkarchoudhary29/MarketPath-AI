@@ -26,7 +26,7 @@
 8. [Local Installation & Setup](#8-local-installation--setup)
 9. [Environment Variables](#9-environment-variables)
 10. [Authentication & User Roles](#10-authentication--user-roles)
-11. [Deterministic Demo Environment](#11-deterministic-demo-environment)
+11. [Recruiter Demo Credentials & Evaluation Environment](#11-recruiter-demo-credentials--evaluation-environment)
 12. [Third-Party Integrations & Channel Status](#12-third-party-integrations--channel-status)
 13. [Database & Data Model](#13-database--data-model)
 14. [Testing & Quality Assurance](#14-testing--quality-assurance)
@@ -448,18 +448,24 @@ MarketPath AI implements an isolated, role-based access control (RBAC) architect
 
 ---
 
-## 11. Deterministic Demo Environment
+## 11. Recruiter Demo Credentials & Evaluation Environment
 
-For evaluations, technical interviews, and stakeholder walkthroughs, MarketPath AI provides pre-seeded accounts containing realistic, verified D2C business data:
+For recruiters, technical interviewers, and stakeholders, MarketPath AI provides four dedicated, isolated demonstration accounts pre-seeded with coherent Indian D2C operational data (**Aura Terra Living — Pune**).
 
-| Account Role | Email Address | Password | Landing Portal | Pre-Populated Dataset |
+### Recruiter Demo Credentials Table
+
+| Role | Email Address | Public Demo Password | Landing Portal | What the Recruiter Can Explore |
 |---|---|---|---|---|
-| **D2C Brand Seller** | `demo.company@marketpath.ai` | `AuraTerra#Demo2026!` | `/app/dashboard` | **Aura Terra Living** (Home & Living, Pune): 15 brand dimensions, 18 products, 32 SKUs, 4 connected channels, ₹14.8L GMV, 40 sample orders, real-time inventory ledger, 4 marketing campaigns. |
-| **Marketing Agency** | `demo.agency@marketpath.ai` | `CraftVerve#Demo2026!` | `/agency/portal/dashboard` | **CraftVerve Media**: Verified partner profile, service packages, active RFPs, and sanitized client briefs with founder PII redacted. |
-| **Growth Consultant**| `demo.consultant@marketpath.ai`| `DrSharma#Demo2026!` | `/consultant/portal` | **Dr. Rajesh Sharma**: D2C advisory desk, calendar availability, 4 consultation requests, and double-sided diagnostic reports. |
-| **Platform Admin** | `demo.admin@marketpath.ai` | `Admin#Platform2026!` | `/admin/overview` | **Platform Administration**: Global system telemetry, tenant verification queues, agency approval requests, and immutable audit logs. |
+| **Company Demo (Brand Owner)** | `demo.company@marketpath.ai` | `MarketPath-Company-Demo-2026!` | `/app/dashboard` | **Aura Terra Living**: 15 brand dimensions, 18 handcrafted products, 32 SKUs, 4 connected channels, 40 sample orders, real-time inventory ledger, 4 live marketing campaigns, and AI listing generator. |
+| **Agency Demo (Partner Agency)** | `demo.agency@marketpath.ai` | `MarketPath-Agency-Demo-2026!` | `/agency/portal` | **CraftVerve Media**: Verified Partner agency profile, 3 packaged growth retainers, inbound client RFP inbox, active engagements, and privacy-vaulted proposals. |
+| **Consultant Demo (Category Advisor)** | `demo.consultant@marketpath.ai` | `MarketPath-Consultant-Demo-2026!` | `/consultant/portal` | **Dr. Rajesh Sharma**: D2C strategic advisory desk, calendar availability, 4 consultation requests, and private double-sided diagnostic audit reports. |
+| **Demo Admin (Operator Console)** | `demo.admin@marketpath.ai` | `MarketPath-DemoAdmin-2026!` | `/admin/overview` | **Platform Demonstration Admin**: Global system telemetry, tenant verification queues, agency vetting, background job monitor, and immutable audit logs. |
 
-> **Interactive Demo Helpers:** The sign-in page (`/login`) includes one-click buttons to pre-fill credentials for each demo role.
+> **Interactive Recruiter Demo Access:**
+> - Both the landing page (`/`) and sign-in page (`/login`) feature a prominent **"Explore MarketPath AI — Recruiter Demo Access"** section with one-click **Copy Email**, **Copy Password**, and **Open & Pre-fill Login** actions.
+> - Normal authentication occurs via `/api/v1/auth/login-account` with secure password hashing (`pbkdf2_sha256`).
+> - **Demo Safety Restrictions:** Public demo accounts operate in an isolated demo organization (`aura-terra-demo`). Destructive external marketplace actions, payment gateway debits, and real email dispatch are safely simulated.
+> - **Real Platform Admin Security:** Real platform super-admin accounts (`operator@marketpath.ai`) are separate, require server-side bootstrap provisioning, and are never exposed in public documentation or demo tables.
 
 ---
 
