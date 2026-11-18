@@ -33,7 +33,7 @@ def upgrade() -> None:
         sa.Column('financial_status', sa.String(50), server_default='paid', nullable=False),
         sa.Column('fulfillment_status', sa.String(50), server_default='unfulfilled', nullable=False),
         sa.Column('order_date', sa.DateTime(timezone=True), nullable=False),
-        sa.Column('inventory_synced', sa.Boolean(), server_default=sa.text('0'), nullable=False),
+        sa.Column('inventory_synced', sa.Boolean(), server_default=sa.false(), nullable=False),
         sa.Column('sync_status', sa.String(50), server_default='synced', nullable=False),
         sa.Column('sync_notes', sa.Text(), nullable=True),
         sa.Column('raw_payload', sa.JSON(), nullable=False),
