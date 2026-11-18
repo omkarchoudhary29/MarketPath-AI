@@ -25,7 +25,7 @@ def upgrade() -> None:
         sa.Column('user_id', GUID(), sa.ForeignKey('user_profiles.id', ondelete='CASCADE'), nullable=False),
         sa.Column('organization_id', GUID(), sa.ForeignKey('organizations.id', ondelete='SET NULL'), nullable=True),
         sa.Column('title', sa.String(length=255), server_default='Operational AI Diagnostics', nullable=False),
-        sa.Column('is_active', sa.Boolean(), server_default=sa.text('1'), nullable=False),
+        sa.Column('is_active', sa.Boolean(), server_default=sa.true(), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     )
