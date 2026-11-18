@@ -44,6 +44,7 @@ COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 RUN addgroup --system --gid 1001 marketpath && \
     adduser --system --uid 1001 --ingroup marketpath marketpath && \
     mkdir -p /app/secrets && \
+    chmod +x /app/backend/scripts/start.sh && \
     chown -R marketpath:marketpath /app
 
 USER marketpath
@@ -53,5 +54,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
-# Execute startup with database seeding verification and dynamic port listener
-CMD ["sh", "-c", "python -m backend.scripts.seed_demo && uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Execute startup lifecycle with Alembic migrations, demo seeder, invariant verification, and dynamic port listener
+CMD ["/bin/sh", "/app/backend/scripts/start.sh"]

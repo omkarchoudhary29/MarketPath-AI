@@ -218,6 +218,10 @@ async def verify_demo_data() -> bool:
                 print(f"❌ Demo Security Check Failed: Unhashed password detected for {d_email}.")
                 demo_auth_passed = False
                 all_passed = False
+            elif d_user.is_platform_admin:
+                print(f"❌ Privilege Escalation Alert: {d_email} must have is_platform_admin=False!")
+                demo_auth_passed = False
+                all_passed = False
         if demo_auth_passed:
             print("✅ Recruiter Demo Accounts: All 4 public demo credentials authenticated & hashed securely.")
 

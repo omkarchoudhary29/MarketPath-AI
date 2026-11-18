@@ -91,7 +91,7 @@ async def seed_demo_environment(force: bool = False) -> None:
             (DEMO_COMPANY_USER_ID, demo_emails["company"], "Ananya Deshmukh (Demo Founder)", "company", False, pw_company),
             (DEMO_AGENCY_USER_ID, demo_emails["agency"], "Vikram Mehta (CraftVerve Media)", "agency", False, pw_agency),
             (DEMO_CONSULTANT_USER_ID, demo_emails["consultant"], "Dr. Rajesh Sharma (Lead D2C Advisor)", "consultant", False, pw_consultant),
-            (DEMO_ADMIN_USER_ID, demo_emails["admin"], "Demo Platform Operator", "admin", True, pw_admin),
+            (DEMO_ADMIN_USER_ID, demo_emails["admin"], "Demo Platform Operator", "admin", False, pw_admin),
         ]
 
         for uid, email, fname, atype, is_adm, pw in users_def:

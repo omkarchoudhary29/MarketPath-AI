@@ -13,11 +13,16 @@ import {
   FileText,
   ArrowLeft,
   CalendarCheck,
+  Info,
 } from 'lucide-react';
 import { ToastContainer } from '../components/common/ToastContainer';
 import { DemoBanner } from '../components/common/DemoBanner';
+import { useAuth } from '../context/AuthContext';
 
 export const AdminLayout: React.FC = () => {
+  const { user } = useAuth();
+  const isDemoAdmin = !user?.is_platform_admin && (user?.account_type === 'admin' || user?.email === 'demo.admin@marketpath.ai');
+
   const adminNav = [
     { name: 'System Overview', to: '/admin', icon: Activity },
     { name: 'Tenants & Orgs', to: '/admin/organizations', icon: Building2 },
@@ -34,11 +39,23 @@ export const AdminLayout: React.FC = () => {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       <DemoBanner />
       {/* Operator Security Warning Banner */}
-      <div className="bg-forest-deep border-b border-forest px-4 py-2.5 text-xs flex items-center justify-between text-emerald">
+      <div
+        className={`border-b px-4 py-2.5 text-xs flex items-center justify-between ${
+          isDemoAdmin
+            ? 'bg-amber-950/40 border-amber-800/60 text-amber-300'
+            : 'bg-forest-deep border-forest text-emerald'
+        }`}
+      >
         <div className="flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-softorange shrink-0" />
+          {isDemoAdmin ? (
+            <Info className="w-4 h-4 text-amber-400 shrink-0" />
+          ) : (
+            <ShieldAlert className="w-4 h-4 text-softorange shrink-0" />
+          )}
           <span className="font-mono text-[11px] font-bold tracking-wider uppercase text-slate-200">
-            RESTRICTED PLATFORM OPERATOR CONSOLE — ROLE: PLATFORM_ADMIN
+            {isDemoAdmin
+              ? 'DEMONSTRATION OPERATOR CONSOLE — SYNTHETIC TELEMETRY (READ-ONLY ISOLATED DEMO VIEW)'
+              : 'RESTRICTED PLATFORM OPERATOR CONSOLE — ROLE: PLATFORM_ADMIN'}
           </span>
         </div>
         <Link

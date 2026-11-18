@@ -64,141 +64,16 @@ def _slugify(text: str) -> str:
 
 def _set_session_cookie(response: Response, token: str) -> None:
     """Sets a secure HttpOnly cookie for session token."""
+    is_prod = settings.APP_ENV == "production"
     response.set_cookie(
         key="marketpath_session",
         value=token,
         httponly=True,
         samesite="lax",
-        secure=False,  # Set to False in local dev for http://localhost
+        secure=is_prod,
         max_age=86400 * 7,
         path="/",
     )
-
-
-async def _ensure_demo_user(db: AsyncSession, email: str, account_type: str) -> Optional[UserProfile]:
-    """Pre-seeds standard demo accounts with real database records and default credentials."""
-    email_clean = email.strip().lower()
-
-    if email_clean == "ananya.deshmukh@auraterra.in" and account_type == "company":
-        user_res = await db.execute(select(UserProfile).where(UserProfile.id == DEMO_USER_ID))
-        user = user_res.scalar_one_or_none()
-        if not user:
-            user = UserProfile(
-                id=DEMO_USER_ID,
-                email="ananya.deshmukh@auraterra.in",
-                full_name="Ananya Deshmukh",
-                account_type="company",
-                is_platform_admin=False,
-                password_hash=hash_password("marketpath123"),
-            )
-            db.add(user)
-            await db.flush()
-        elif not user.password_hash:
-            user.password_hash = hash_password("marketpath123")
-            await db.flush()
-
-        # Ensure demo organization
-        org_res = await db.execute(select(Organization).where(Organization.id == DEMO_ORG_ID))
-        org = org_res.scalar_one_or_none()
-        if not org:
-            org = Organization(
-                id=DEMO_ORG_ID,
-                name="Aura Terra Living",
-                slug="aura-terra-living",
-                org_type="business",
-                is_active=True,
-                settings={"currency": "INR", "timezone": "Asia/Kolkata", "category": "Home & Living"},
-            )
-            db.add(org)
-            await db.flush()
-
-        # Ensure membership
-        mem_res = await db.execute(
-            select(OrganizationMember).where(
-                OrganizationMember.organization_id == DEMO_ORG_ID,
-                OrganizationMember.user_id == DEMO_USER_ID,
-            )
-        )
-        if not mem_res.scalar_one_or_none():
-            db.add(
-                OrganizationMember(
-                    id=uuid.uuid4(),
-                    organization_id=DEMO_ORG_ID,
-                    user_id=DEMO_USER_ID,
-                    role="owner",
-                )
-            )
-            await db.flush()
-
-        await db.commit()
-        await db.refresh(user)
-        return user
-
-    elif email_clean in ["admin@marketpath.ai", "operator@marketpath.ai"] and account_type == "admin":
-        user_res = await db.execute(select(UserProfile).where(UserProfile.email == email_clean))
-        user = user_res.scalar_one_or_none()
-        if not user:
-            user = UserProfile(
-                id=ADMIN_USER_ID,
-                email=email_clean,
-                full_name="MarketPath System Operator",
-                account_type="admin",
-                is_platform_admin=True,
-                password_hash=hash_password("marketpath123"),
-            )
-            db.add(user)
-            await db.commit()
-            await db.refresh(user)
-        elif not user.password_hash:
-            user.password_hash = hash_password("marketpath123")
-            user.is_platform_admin = True
-            await db.commit()
-            await db.refresh(user)
-        return user
-
-    elif email_clean in ["contact@craftverve.demo.in", "agency@marketpath.ai"] and account_type == "agency":
-        user_res = await db.execute(select(UserProfile).where(UserProfile.email == email_clean))
-        user = user_res.scalar_one_or_none()
-        if not user:
-            user = UserProfile(
-                id=AGENCY_USER_ID,
-                email=email_clean,
-                full_name="CraftVerve Growth Partner (Agency)",
-                account_type="agency",
-                is_platform_admin=False,
-                password_hash=hash_password("marketpath123"),
-            )
-            db.add(user)
-            await db.commit()
-            await db.refresh(user)
-        elif not user.password_hash:
-            user.password_hash = hash_password("marketpath123")
-            await db.commit()
-            await db.refresh(user)
-        return user
-
-    elif email_clean in ["advisor@marketpath.ai", "consultant@marketpath.ai"] and account_type == "consultant":
-        user_res = await db.execute(select(UserProfile).where(UserProfile.email == email_clean))
-        user = user_res.scalar_one_or_none()
-        if not user:
-            user = UserProfile(
-                id=CONSULTANT_USER_ID,
-                email=email_clean,
-                full_name="Dr. Rajesh Sharma (Lead D2C Advisor)",
-                account_type="consultant",
-                is_platform_admin=False,
-                password_hash=hash_password("marketpath123"),
-            )
-            db.add(user)
-            await db.commit()
-            await db.refresh(user)
-        elif not user.password_hash:
-            user.password_hash = hash_password("marketpath123")
-            await db.commit()
-            await db.refresh(user)
-        return user
-
-    return None
 
 
 @router.post("/register-company", response_model=LoginAccountResponse, status_code=status.HTTP_201_CREATED)
@@ -664,7 +539,14 @@ async def logout(
     if raw_token:
         await SessionService.revoke_session(db, raw_token)
 
-    response.delete_cookie(key="marketpath_session", path="/")
+    is_prod = settings.APP_ENV == "production"
+    response.delete_cookie(
+        key="marketpath_session",
+        path="/",
+        httponly=True,
+        samesite="lax",
+        secure=is_prod,
+    )
     return LogoutResponse(success=True, message="Successfully logged out. Session invalidated.")
 
 

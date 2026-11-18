@@ -9,6 +9,7 @@ from backend.app.api.v1.brand import router as brand_router
 from backend.app.api.v1.calendar import router as calendar_router
 from backend.app.api.v1.campaigns import router as campaigns_router
 from backend.app.api.v1.consultations import router as consultations_router
+from backend.app.api.v1.demo_admin import router as demo_admin_router
 from backend.app.api.v1.health import router as health_router
 from backend.app.api.v1.integrations import router as integrations_router
 from backend.app.api.v1.inventory import router as inventory_router
@@ -44,6 +45,7 @@ api_router.include_router(billing_router)
 api_router.include_router(services_router)
 api_router.include_router(agency_router)
 api_router.include_router(admin_router)
+api_router.include_router(demo_admin_router)
 api_router.include_router(orders_router, prefix="/orders", tags=["Orders"])
 api_router.include_router(inventory_router, prefix="/inventory", tags=["Inventory"])
 api_router.include_router(support_router, prefix="/support", tags=["Support Bot"])

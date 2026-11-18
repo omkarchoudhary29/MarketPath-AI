@@ -50,14 +50,16 @@ def hash_session_token(raw_token: str) -> str:
 # --- AES-256-GCM Token Encryption ---
 
 def _get_encryption_key() -> bytes:
-    """Decodes the 32-byte master key from settings."""
+    """Decodes the 32-byte master key from settings with fail-fast validation in production."""
     try:
         raw_key = base64.b64decode(settings.ENCRYPTION_MASTER_KEY)
         if len(raw_key) != 32:
-            raise ValueError("ENCRYPTION_MASTER_KEY must be exactly 32 bytes when decoded.")
+            raise ValueError(f"ENCRYPTION_MASTER_KEY must be exactly 32 bytes when decoded, got {len(raw_key)}.")
         return raw_key
-    except Exception:
-        # Fallback 32-byte deterministic key for development/testing
+    except Exception as e:
+        if settings.APP_ENV == "production":
+            raise ValueError(f"Production configuration error: ENCRYPTION_MASTER_KEY is invalid: {e}")
+        # Fallback 32-byte deterministic key for development/testing only
         return b"32_bytes_dev_master_key_for_test"
 
 

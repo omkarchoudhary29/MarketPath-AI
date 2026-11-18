@@ -14,92 +14,10 @@ from backend.app.services.billing_service import BillingService
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Seed default SaaS plans and demo fixtures if database is unseeded
+    # Seed default SaaS plans if database is unseeded
     try:
         async with AsyncSessionLocal() as session:
             await BillingService.seed_default_plans(session)
-            
-            # Ensure demo organization and user exist for seamless local testing
-            from backend.app.api.v1.auth import DEMO_ORG_ID, DEMO_USER_ID
-            from backend.app.models.organization import Organization, OrganizationMember
-            from backend.app.models.user import UserProfile
-            from backend.app.models.brand import BrandProfile
-            from backend.app.services.agency_service import AgencyServiceManager
-            from sqlalchemy import select
-
-            org_res = await session.execute(select(Organization).where(Organization.id == DEMO_ORG_ID))
-            org = org_res.scalar_one_or_none()
-            if not org:
-                org = Organization(
-                    id=DEMO_ORG_ID,
-                    name="Aura Terra Living",
-                    slug="aura-terra-living",
-                    is_active=True,
-                    settings={
-                        "currency": "INR",
-                        "timezone": "Asia/Kolkata",
-                        "category": "Home & Living",
-                    },
-                )
-                session.add(org)
-                await session.flush()
-
-            from backend.app.core.security import hash_password
-
-            user_res = await session.execute(select(UserProfile).where(UserProfile.id == DEMO_USER_ID))
-            demo_user = user_res.scalar_one_or_none()
-            if not demo_user:
-                demo_user = UserProfile(
-                    id=DEMO_USER_ID,
-                    email="ananya.deshmukh@auraterra.in",
-                    full_name="Ananya Deshmukh",
-                    avatar_url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
-                    account_type="company",
-                    is_platform_admin=False,
-                    password_hash=hash_password("marketpath123"),
-                )
-                session.add(demo_user)
-                await session.flush()
-            elif not demo_user.password_hash or demo_user.is_platform_admin:
-                demo_user.account_type = "company"
-                demo_user.is_platform_admin = False
-                demo_user.password_hash = hash_password("marketpath123")
-                await session.flush()
-
-            mem_res = await session.execute(
-                select(OrganizationMember).where(
-                    OrganizationMember.organization_id == DEMO_ORG_ID,
-                    OrganizationMember.user_id == DEMO_USER_ID,
-                )
-            )
-            if not mem_res.scalar_one_or_none():
-                session.add(
-                    OrganizationMember(
-                        id=uuid.uuid4(),
-                        organization_id=DEMO_ORG_ID,
-                        user_id=DEMO_USER_ID,
-                        role="owner",
-                    )
-                )
-
-            brand_res = await session.execute(select(BrandProfile).where(BrandProfile.organization_id == DEMO_ORG_ID))
-            if not brand_res.scalar_one_or_none():
-                session.add(
-                    BrandProfile(
-                        id=uuid.uuid4(),
-                        organization_id=DEMO_ORG_ID,
-                        brand_name="Aura Terra Living",
-                        tagline="Conscious artisanal home fragrances and ceramics",
-                        tone_of_voice="Warm & Artisanal",
-                        archetype="Creator & Caregiver",
-                        target_audience_summary="Urban conscious homeowners, 25-45, valuing handcrafted aesthetic goods.",
-                    )
-                )
-
-            from backend.app.services.demo_catalogue_fixtures import seed_demo_catalogue_if_empty
-            await AgencyServiceManager.seed_demo_agencies_if_empty(session, DEMO_ORG_ID)
-            await seed_demo_catalogue_if_empty(session, DEMO_ORG_ID)
-            await session.commit()
     except Exception as e:
         print(f"Data initialization notice: {e}")
     yield
@@ -116,10 +34,15 @@ app = FastAPI(
 
 # CORS Configuration
 origins = list(set([settings.FRONTEND_URL] + settings.ALLOWED_ORIGINS))
+allow_origin_regex = (
+    r"https?://(localhost|127\.0\.0\.1|.*\.up\.railway\.app|.*\.railway\.app)(:\d+)?"
+    if settings.APP_ENV != "production"
+    else None
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|.*\.up\.railway\.app|.*\.railway\.app)(:\d+)?",
+    allow_origin_regex=allow_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

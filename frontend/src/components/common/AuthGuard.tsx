@@ -30,7 +30,9 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
-  if (requirePlatformAdmin && !user.is_platform_admin) {
+  // Check platform administrator access (allows genuine superadmins or demo admin exploring demo console)
+  const isDemoAdminUser = user.account_type === 'admin' && (user.email === 'demo.admin@marketpath.ai' || user.email.startsWith('demo.admin'));
+  if (requirePlatformAdmin && !user.is_platform_admin && !isDemoAdminUser) {
     return (
       <div className="min-h-screen bg-warmwhite flex flex-col items-center justify-center p-6 text-center">
         <div className="max-w-md bg-white p-8 rounded-3xl border border-rose-200 shadow-option-c-lg space-y-4">

@@ -1,7 +1,8 @@
+import base64
 import os
 from typing import List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 
 
 class Settings(BaseSettings):
@@ -93,6 +94,29 @@ class Settings(BaseSettings):
     RESEND_API_KEY: Optional[str] = None
     SENDGRID_API_KEY: Optional[str] = None
     META_APP_SCOPES: str = "instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement"
+
+    @model_validator(mode="after")
+    def validate_production_security(self) -> "Settings":
+        """Fail-fast validation for critical secrets and encryption keys in production."""
+        if self.APP_ENV == "production":
+            # 1. SECRET_KEY validation
+            if not self.SECRET_KEY or len(self.SECRET_KEY) < 32:
+                raise ValueError("In production, SECRET_KEY must be configured with at least 32 characters.")
+            insecure_patterns = ["insecure", "change-in-prod", "placeholder", "dev-secret", "default"]
+            if any(p in self.SECRET_KEY.lower() for p in insecure_patterns):
+                raise ValueError("In production, SECRET_KEY cannot use default or placeholder values.")
+
+            # 2. ENCRYPTION_MASTER_KEY validation
+            if not self.ENCRYPTION_MASTER_KEY:
+                raise ValueError("In production, ENCRYPTION_MASTER_KEY must be provided.")
+            try:
+                decoded = base64.b64decode(self.ENCRYPTION_MASTER_KEY)
+                if len(decoded) != 32:
+                    raise ValueError(f"Decoded key length must be exactly 32 bytes, got {len(decoded)}.")
+            except Exception as e:
+                raise ValueError(f"In production, ENCRYPTION_MASTER_KEY must be a valid 32-byte Base64 key: {e}")
+
+        return self
 
 
 settings = Settings()

@@ -516,7 +516,7 @@ async def test_demo_and_platform_admin_provisioning_state(db_session):
         ("demo.company@marketpath.ai", "company", False),
         ("demo.agency@marketpath.ai", "agency", False),
         ("demo.consultant@marketpath.ai", "consultant", False),
-        ("demo.admin@marketpath.ai", "admin", True),
+        ("demo.admin@marketpath.ai", "admin", False),
         ("operator@marketpath.ai", "admin", True),
     ]
 
@@ -546,3 +546,121 @@ async def test_demo_and_platform_admin_provisioning_state(db_session):
         assert "demo.agency@marketpath.ai" in content
         assert "demo.consultant@marketpath.ai" in content
         assert "demo.admin@marketpath.ai" in content
+
+
+# ==============================================================================
+# 9. DEMO ADMIN PRIVILEGE ISOLATION & NEGATIVE SECURITY TESTS
+# ==============================================================================
+
+@pytest.mark.asyncio
+async def test_demo_admin_cannot_access_real_admin_endpoints(client: AsyncClient, db_session):
+    """Negative Security Test: Proves Demo Admin is strictly rejected from real platform admin APIs."""
+    # 0. Seed Demo Admin in isolated test database
+    pw_hash = hash_password("MarketPath-DemoAdmin-2026!")
+    admin_user = UserProfile(
+        id=uuid.UUID("d0000001-0000-0000-0000-000000000004"),
+        email="demo.admin@marketpath.ai",
+        full_name="Demo Platform Operator",
+        account_type="admin",
+        is_platform_admin=False,
+        password_hash=pw_hash,
+        is_active=True,
+    )
+    db_session.add(admin_user)
+    await db_session.commit()
+
+    # 1. Login as Demo Admin
+    login_res = await client.post(
+        "/api/v1/auth/login-account",
+        json={
+            "email": "demo.admin@marketpath.ai",
+            "password": "MarketPath-DemoAdmin-2026!",
+            "account_type": "admin",
+        },
+    )
+    assert login_res.status_code == 200, login_res.text
+    token = login_res.json()["access_token"]
+    user_data = login_res.json()["user"]
+
+    # Verify user profile attributes: account_type is 'admin' but is_platform_admin is strictly False
+    assert user_data["account_type"] == "admin"
+    assert user_data["is_platform_admin"] is False
+
+    demo_headers = {"Authorization": f"Bearer {token}"}
+
+    # 2. Negative test: Real Platform Admin Overview -> MUST return 403 Forbidden
+    res_overview = await client.get("/api/v1/admin/overview", headers=demo_headers)
+    assert res_overview.status_code == 403
+    assert "Platform Administrator privileges required" in res_overview.json()["detail"]
+
+    # 3. Negative test: Real Platform Admin Organizations -> MUST return 403 Forbidden
+    res_orgs = await client.get("/api/v1/admin/organizations", headers=demo_headers)
+    assert res_orgs.status_code == 403
+
+    # 4. Negative test: Real Platform Admin Users -> MUST return 403 Forbidden
+    res_users = await client.get("/api/v1/admin/users", headers=demo_headers)
+    assert res_users.status_code == 403
+
+    # 5. Negative test: Mutation attempt (Suspend user) -> MUST return 403 Forbidden
+    res_suspend = await client.post(
+        f"/api/v1/admin/users/{user_data['id']}/suspend",
+        headers=demo_headers,
+    )
+    assert res_suspend.status_code == 403
+
+    # 6. Positive test: Dedicated Demo Admin Overview -> MUST return 200 OK with synthetic telemetry
+    res_demo_overview = await client.get("/api/v1/demo-admin/overview", headers=demo_headers)
+    assert res_demo_overview.status_code == 200
+    telemetry = res_demo_overview.json()
+    assert telemetry["total_users"] == 4
+    assert telemetry["total_products"] == 18
+    assert "ISOLATED_RECRUITER_DEMO" in telemetry["connector_health"]["environment_mode"]
+    assert telemetry["connector_health"]["production_data_access"] == "BLOCKED"
+
+    # 7. Positive test: Dedicated Demo Admin Organizations -> MUST return 200 OK
+    res_demo_orgs = await client.get("/api/v1/demo-admin/organizations", headers=demo_headers)
+    assert res_demo_orgs.status_code == 200
+
+    # 8. Negative test on demo-admin mutations -> MUST return 403 Forbidden
+    res_mutation = await client.post(
+        f"/api/v1/demo-admin/users/{user_data['id']}/suspend",
+        headers=demo_headers,
+    )
+    assert res_mutation.status_code == 403
+    assert "strictly read-only" in res_mutation.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_non_admin_cannot_access_demo_admin_endpoints(client: AsyncClient, db_session):
+    """Verifies that non-admin accounts cannot access demo-admin telemetry."""
+    # 0. Seed Company Demo in test db
+    pw_hash = hash_password("MarketPath-Company-Demo-2026!")
+    company_user = UserProfile(
+        id=uuid.UUID("d0000001-0000-0000-0000-000000000001"),
+        email="demo.company@marketpath.ai",
+        full_name="Ananya Deshmukh",
+        account_type="company",
+        is_platform_admin=False,
+        password_hash=pw_hash,
+        is_active=True,
+    )
+    db_session.add(company_user)
+    await db_session.commit()
+
+    # Login as Company Demo
+    company_login = await client.post(
+        "/api/v1/auth/login-account",
+        json={
+            "email": "demo.company@marketpath.ai",
+            "password": "MarketPath-Company-Demo-2026!",
+            "account_type": "company",
+        },
+    )
+    assert company_login.status_code == 200
+    token = company_login.json()["access_token"]
+    company_headers = {"Authorization": f"Bearer {token}"}
+
+    # Calling /api/v1/demo-admin/overview as company -> MUST return 403 Forbidden
+    res = await client.get("/api/v1/demo-admin/overview", headers=company_headers)
+    assert res.status_code == 403
+    assert "Demo Operator or Platform Administrator privileges required" in res.json()["detail"]
