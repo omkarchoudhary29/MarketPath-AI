@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-primary: #08765B;
+    --brand-forest: #075443;
+    --brand-forest-deep: #053F32;
+    --brand-emerald: #15966F;
+    --brand-warmwhite: #FCFBF7;
+    --brand-purewhite: #FFFFFF;
+    --brand-softbeige: #F4EDE2;
+    --brand-charcoal: #18231F;
+    --brand-mutedgrey: #64716C;
+    --brand-softorange: #D99143;
+    --brand-bordergrey: #E5EAE6;
+  }
+
+  body {
+    background-color: var(--brand-warmwhite);
+    color: var(--brand-charcoal);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--brand-primary);
+    color: #ffffff;
+  }
+}
+
+/* Option C Core Container Utility Fallbacks */
+.bg-forest {
+  background-color: #075443 !important;
+}
+.bg-forest-deep {
+  background-color: #053F32 !important;
+}
+.border-forest {
+  border-color: #075443 !important;
+}
+
+/* Option C Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #C1E0D4;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #8CC5B0;
+}

@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Environment & Secrets
+.env
+.env.*
+secrets/
+test_credentials_vault.json
+
+# Dependencies & Build Caches
+node_modules/
+frontend/node_modules/
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Artifacts & Screenshots
+screenshots/
+docs/screenshots/
+experiments/
+
+# Local databases
+*.db
+marketpath.db
