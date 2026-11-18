@@ -31,7 +31,7 @@ def upgrade() -> None:
         sa.Column('start_time', sa.String(length=20), nullable=True),
         sa.Column('end_time', sa.String(length=20), nullable=True),
         sa.Column('slot_capacity', sa.Integer(), server_default='1', nullable=False),
-        sa.Column('is_blocked', sa.Boolean(), server_default=sa.text('1'), nullable=False),
+        sa.Column('is_blocked', sa.Boolean(), server_default=sa.true(), nullable=False),
         sa.Column('notes', sa.String(length=255), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
