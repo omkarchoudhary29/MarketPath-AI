@@ -1,7 +1,7 @@
 import datetime
 import uuid
 from typing import Any, Dict, List, Optional
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, JSON, String, Text
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, JSON, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.core.database import Base
 from backend.app.models.base import GUID, TimestampMixin
@@ -63,7 +63,7 @@ class ConsultationAvailabilityRule(Base, TimestampMixin):
     start_time: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # "10:00"
     end_time: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # "18:00"
     slot_capacity: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
-    is_blocked: Mapped[bool] = mapped_column(Integer, default=1, nullable=False)
+    is_blocked: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     notes: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     def __repr__(self) -> str:
