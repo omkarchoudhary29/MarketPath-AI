@@ -9,7 +9,7 @@ and Inventory API with honest status reporting when developer credentials are pe
 
 import datetime
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 import httpx
 from backend.app.core.config import settings
 
