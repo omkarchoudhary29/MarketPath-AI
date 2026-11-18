@@ -30,7 +30,7 @@ def upgrade() -> None:
         sa.Column('session_type', sa.String(length=50), server_default='real', nullable=False),
         sa.Column('device_info', sa.Text(), nullable=True),
         sa.Column('ip_address', sa.String(length=50), nullable=True),
-        sa.Column('is_active', sa.Boolean(), server_default=sa.text('1'), nullable=False),
+        sa.Column('is_active', sa.Boolean(), server_default=sa.true(), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column('last_activity_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
